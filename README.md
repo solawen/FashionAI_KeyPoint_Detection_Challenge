@@ -17,19 +17,19 @@
 
 ## Usage
 1.Run the following command to generate .mat file
-'''shell
+```shell
 python preprocessing.py
-'''
+```
 
 2.Run the following command to train
-'''shell
+```shell
 python train.py --gpus=1
-'''
+```
 
 3.Modify the model path in predict (model_to_load), then run the following command to get predict .csv file.
-'''shell
+```shell
 python predict.py
-'''
+```
 
 ## Requirements
 - python (3.5.2)
