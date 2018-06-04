@@ -10,7 +10,7 @@
 - `test` : store testing images
 - `src`: store some of the source code. \
 `src/CPN_ONE_data_gen.py`: data generator. \
-`src/CPN_ONE_model.py`: model definition. \
+`src/CPN_ONE_model.py`: model definition.
 - `predict.py` : predict keypoints from images.
 - `preprocessing.py` : generate .mat file for training model.
 - `train.py` : training model.
