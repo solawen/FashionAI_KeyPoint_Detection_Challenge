@@ -3,7 +3,6 @@ from keras.models import Model, load_model
 from keras.regularizers import l2
 import warnings
 import tensorflow as tf
-from src.CPN_model import CPN2
 
 class Multi_gpu_Checkpoint(keras.callbacks.ModelCheckpoint):
     def __init__(self, original_model, filepath, monitor='val_loss', verbose=0,
@@ -62,7 +61,7 @@ def custom_loss(y_true, y_pred):
     return keras.losses.binary_crossentropy(y_true,y_pred)
 
 
-class CPN(CPN2):
+class CPN(object):
     def __init__(self, point_num = 24, weight_decay=0., gpu_num=1, load_model=None):
         pass
         self.point_num = point_num
@@ -72,6 +71,29 @@ class CPN(CPN2):
             self.model = self.get_model(weight_decay=weight_decay)
         else:
             self.model = keras.models.load_model(load_model,{'custom_loss':custom_loss})
+    
+    def res_bottleneck(self, input_tensor, weight_decay):
+        tmp = keras.layers.Conv2D(128, kernel_size=(1, 1), padding='same', name='conv_2d_bottle_%d' %
+                                  self.i, kernel_regularizer=l2(weight_decay))(input_tensor)
+        self.i = self.i+1
+
+        tmp = keras.layers.Conv2D(128, kernel_size=(
+            3, 3), padding='same', name='cv_2d_bot_%d' % self.i, kernel_regularizer=l2(weight_decay))(tmp)
+        self.i = self.i+1
+
+        tmp = keras.layers.Conv2D(256, kernel_size=(
+            1, 1), padding='same', name='cv_2d_bot_%d' % self.i, kernel_regularizer=l2(weight_decay))(tmp)
+        self.i = self.i+1
+
+        input_tensor = keras.layers.Conv2D(256, kernel_size=(
+            1, 1), padding='same', name='cv_2d_bot_%d' % self.i, kernel_regularizer=l2(weight_decay))(input_tensor)
+        
+        tmp = keras.layers.Add(name='cv_add_bot_%d' %
+                               self.i)([tmp, input_tensor])
+        tmp = keras.layers.Activation(
+            'relu', name='cv_ac_bot_%d' % self.i)(tmp)
+        self.i = self.i+1
+        return tmp
 
     def get_model(self, weight_decay):
         pass
